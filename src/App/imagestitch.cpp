@@ -56,20 +56,50 @@ void ImageStitcher::MakeStitching()
 
 void ImageStitcher::FeaturePointMap()
 {
-    auto sift_detector_ = cv::SIFT::create(0, 3, 0.1, 5, 3.2);                                                   
-    std::vector<cv::KeyPoint> keypoint_list_c_, keypoint_list_p_;                                //SIFT特征检测算子
+    //SIFT特征检测算子    100, 3, 0.07, 5, 2.4(image pairs 2) / 0, 3, 0.12, 7, 2.8 (image pairs 1)
+    auto sift_detector_ = cv::SIFT::create(0, 3, 0.12, 7, 2.8);
+    std::vector<cv::KeyPoint> keypoint_list_c_, keypoint_list_p_;                                
     cv::Mat descriptor_c_, descriptor_p_;
     cv::FlannBasedMatcher point_matcher_;      
     //cv::BFMatcher point_matcher_;
+    //std::vector<std::vector<cv::DMatch>> matched_point_;
     std::vector<cv::DMatch> well_matched_point_list_;                                            //匹配良好的特征点对列表
     cv::Mat image_match_;
+    /*cv::Mat image_laplac_c_, image_laplac_p_;
+    cv::Mat image_blur_c_, image_blur_p_;
+
+    cv::GaussianBlur(image_c_, image_blur_c_, cv::Size(3, 3), 5, 0);
+    cv::Laplacian(image_blur_c_, image_laplac_c_, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(image_laplac_c_, image_laplac_c_);
+    cv::add(image_c_, image_laplac_c_, image_laplac_c_);
+    imshow("current梯度图像", image_laplac_c_);
+    cv::GaussianBlur(image_p_, image_blur_p_, cv::Size(3, 3), 2, 0);
+    cv::Laplacian(image_blur_p_, image_laplac_p_, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(image_laplac_p_, image_laplac_p_);
+    cv::add(image_p_, image_laplac_p_, image_laplac_p_);
+    imshow("past梯度图像", image_laplac_p_);
+    cv::waitKey();*/
 
     cvtColor(image_c_, image_gray_c_, cv::COLOR_RGB2GRAY);                                       //获得当前图像的灰度图
     cvtColor(image_p_, image_gray_p_, cv::COLOR_RGB2GRAY);                                       //获得过去图像的灰度图
+    //cvtColor(image_laplac_c_, image_gray_c_, cv::COLOR_RGB2GRAY);                                       //获得当前图像的灰度图
+    //cvtColor(image_laplac_p_, image_gray_p_, cv::COLOR_RGB2GRAY);                                       //获得过去图像的灰度图
 
     sift_detector_->detectAndCompute(image_gray_c_, cv::Mat(), keypoint_list_c_, descriptor_c_);      //当前图像的特征点描述子
     sift_detector_->detectAndCompute(image_gray_p_, cv::Mat(), keypoint_list_p_, descriptor_p_);      //过去图像的特征点描述子  
+    //sift_detector_->detectAndCompute(image_laplac_c_, cv::Mat(), keypoint_list_c_, descriptor_c_);      //当前图像的特征点描述子
+    //sift_detector_->detectAndCompute(image_laplac_p_, cv::Mat(), keypoint_list_p_, descriptor_p_);      //过去图像的特征点描述子 
     point_matcher_.match(descriptor_p_, descriptor_c_, well_matched_point_list_);
+    /*point_matcher_.add(std::vector<cv::Mat>(1, descriptor_c_));
+    point_matcher_.train();
+    point_matcher_.knnMatch(descriptor_p_, matched_point_, 2);
+    for (size_t i = 0; i < matched_point_.size(); i++)
+    {
+        if (matched_point_[i][0].distance < 0.75f * matched_point_[i][1].distance)
+        {
+            well_matched_point_list_.push_back(matched_point_[i][0]);
+        }
+    }*/
     //std::cout << "The total match points' number is:" << well_matched_point_list_.size() << std::endl;
 
     std::sort(well_matched_point_list_.begin(), well_matched_point_list_.end());
@@ -176,7 +206,7 @@ void ImageStitcher::ImageFusionSpecial()
                 //std::cout << max_center_distance_ << std::endl;
                 weight_ = MAX(center_distance_.x / max_center_distance_.x, center_distance_.y / max_center_distance_.y);
                 //weight_ = MAX(center_distance_.x / (center_distance_.x + 20), center_distance_.y / (center_distance_.y + 20));
-                if (image_gray_transform_p_.at<uchar>(i, j) >= 200)
+                if (image_gray_transform_p_.at<uchar>(i, j) >= 210)
                 {
                     weight_ = std::pow(weight_, 1);
                 }
@@ -223,7 +253,7 @@ void ImageStitcher::ImageFusionSpecial()
                 {
                     size_t row_index_ = j + MAX(0, corner_transform_list_p_[0].y);
 
-                    if (image_gray_transform_p_.at<uchar>(row_index_, i) >= 200)
+                    if (image_gray_transform_p_.at<uchar>(row_index_, i) >= 210)
                     {
                         continue;
                     }
@@ -240,7 +270,7 @@ void ImageStitcher::ImageFusionSpecial()
                 {
                     size_t col_index_ = j + MAX(0, corner_transform_list_p_[0].x);
 
-                    if (image_gray_transform_p_.at<uchar>(i, col_index_) >= 200)
+                    if (image_gray_transform_p_.at<uchar>(i, col_index_) >= 210)
                     {
                         continue;
                     }
@@ -257,7 +287,7 @@ void ImageStitcher::ImageFusionSpecial()
                 {
                     size_t row_index_ = j + MAX(0, corner_transform_list_p_[0].y);
 
-                    if (image_gray_transform_p_.at<uchar>(row_index_, i) >= 200)
+                    if (image_gray_transform_p_.at<uchar>(row_index_, i) >= 210)
                     {
                         continue;
                     }
@@ -274,7 +304,7 @@ void ImageStitcher::ImageFusionSpecial()
                 {
                     size_t col_index_ = j + MAX(0, corner_transform_list_p_[0].x);
 
-                    if (image_gray_transform_p_.at<uchar>(i, col_index_) >= 200)
+                    if (image_gray_transform_p_.at<uchar>(i, col_index_) >= 210)
                     {
                         continue;
                     }

@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
 
     //std::string image_current_path_ = argv[1];
     //std::string image_past_path_ = argv[2];
-    std::string image_current_path_ = "C:/Users/12239/Desktop/LookIntoPast/test/1/current.jpg";
-    std::string image_past_path_ = "C:/Users/12239/Desktop/LookIntoPast/test/1/past.jpg";
+    std::string image_current_path_ = "../../test/1/current.jpg";
+    std::string image_past_path_ = "../../test/1/past.jpg";
     size_t common_prefix_length_ = 0;
     /*std::cout << "The current image is " << image_current_path_ << std::endl;
     std::cout << "The past image is " << image_past_path_ << std::endl;*/
