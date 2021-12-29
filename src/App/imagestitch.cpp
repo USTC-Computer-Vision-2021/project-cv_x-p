@@ -3,11 +3,35 @@
 #include "poissonfusion.h"
 
 
-ImageStitcher::ImageStitcher(cv::Mat image_current_, cv::Mat image_past_, std::string blending_method_)
+ImageStitcher::ImageStitcher(cv::Mat image_current_, cv::Mat image_past_, std::string blending_method_, std::string test_case_)
 {
 	image_c_ = image_current_;
 	image_p_ = image_past_;
     b_method_ = blending_method_;
+    if (test_case_ == "1")
+    {
+        nfeatures_ = 0;
+        nOctaveLayers_ = 3;
+        contrastThreshold_ = 0.12;
+        edgeThreshold_ = 7.0;
+        sigma_ = 2.8;
+    }
+    else if (test_case_ == "2")
+    {
+        nfeatures_ = 100;
+        nOctaveLayers_ = 3;
+        contrastThreshold_ = 0.07;
+        edgeThreshold_ = 5.0;
+        sigma_ = 2.4;
+    }
+    else
+    {
+        nfeatures_ = 0;
+        nOctaveLayers_ = 3;
+        contrastThreshold_ = 0.04;
+        edgeThreshold_ = 10.0;
+        sigma_ = 1.6;
+    }  
 }
 
 
@@ -39,16 +63,16 @@ void ImageStitcher::MakeStitching()
         }
     }
 
-    std::cout << background_pixel_ << std::endl;
+    //std::cout << background_pixel_ << std::endl;
 
     if (background_pixel_ < background_ratio_) //这个时候认为图像中背景很少，使用正常的边缘融合
     {
-        std::cout << "融合方式:Normal" << std::endl;
+        //std::cout << "融合方式:Normal" << std::endl;
         ImageFusionNormal();
     }
     else //这个时候认为图像中有较多淡色背景，对背景额外处理
     {
-        std::cout << "融合方式:Special" << std::endl;
+        //std::cout << "融合方式:Special" << std::endl;
         ImageFusionSpecial();
     }
 }
@@ -56,8 +80,9 @@ void ImageStitcher::MakeStitching()
 
 void ImageStitcher::FeaturePointMap()
 {
-    //SIFT特征检测算子    100, 3, 0.07, 5, 2.4(image pairs 2) / 0, 3, 0.12, 7, 2.8 (image pairs 1)
-    auto sift_detector_ = cv::SIFT::create(0, 3, 0.12, 7, 2.8);
+    //SIFT特征检测算子    100, 3, 0.07, 5, 2.4(image pairs 2) / 0, 3, 0.12, 7, 2.8 (image pairs 1) / 0，3， 0.04， 10， 1.6 (others)
+    auto sift_detector_ = cv::SIFT::create(nfeatures_, nOctaveLayers_, contrastThreshold_, edgeThreshold_, sigma_);
+    //auto sift_detector_ = cv::SIFT::create(0, 3, 0.12, 7, 2.8);
     std::vector<cv::KeyPoint> keypoint_list_c_, keypoint_list_p_;                                
     cv::Mat descriptor_c_, descriptor_p_;
     cv::FlannBasedMatcher point_matcher_;      
@@ -105,9 +130,9 @@ void ImageStitcher::FeaturePointMap()
     std::sort(well_matched_point_list_.begin(), well_matched_point_list_.end());
     well_matched_point_list_.resize(1);
 
-    drawMatches(image_p_, keypoint_list_p_, image_c_, keypoint_list_c_, well_matched_point_list_, image_match_);
+    /*drawMatches(image_p_, keypoint_list_p_, image_c_, keypoint_list_c_, well_matched_point_list_, image_match_);
     imshow("The match image ", image_match_);
-    cv::waitKey();
+    cv::waitKey();*/
 
     for (int i = 0; i < 1; i++)                                    //获取两个图像分别对应的特征点列(这里只取匹配效果最好的那个) 
     {
@@ -316,7 +341,7 @@ void ImageStitcher::ImageFusionSpecial()
     }
     else if (b_method_ == "POISSON")
     {
-        std::cout << "Poissom method" << std::endl;
+        //std::cout << "Poisson method" << std::endl;
         PoissonFusion poisson_editor_;
 
         poisson_editor_.SetSourceMask(image_transform_p_, mask_matrix_);
@@ -333,8 +358,8 @@ void ImageStitcher::ImageFusionSpecial()
         std::cout << "不支持这种图像融合方式(请选择NONE或WEIGHT_AVG或POISSON)" << std::endl;
     }
 
-    cv::imshow("拼接图像", fused_image_);
-    cv::waitKey();
+    /*cv::imshow("拼接图像", fused_image_);
+    cv::waitKey();*/
 }
 
 

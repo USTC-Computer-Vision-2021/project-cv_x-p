@@ -15,7 +15,7 @@
 class ImageStitcher
 {
 public:
-	ImageStitcher(cv::Mat image_current_, cv::Mat image_past_, std::string blending_method_);
+	ImageStitcher(cv::Mat image_current_, cv::Mat image_past_, std::string blending_method_, std::string test_case_);
 	~ImageStitcher();
 	void MakeStitching();
 
@@ -36,6 +36,11 @@ private:
 	std::vector<cv::Point2f> corner_transform_list_p_;      //过去图像的四个角在投影矩阵变换后的坐标列表
 	cv::Mat image_gray_c_;
 	cv::Mat image_gray_p_;
+	int nfeatures_;											//SITF参数
+	int nOctaveLayers_;
+	double contrastThreshold_;
+	double edgeThreshold_;
+	double sigma_;
 
 public:
 	cv::Mat fused_image_;

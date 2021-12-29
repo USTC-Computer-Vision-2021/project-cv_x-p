@@ -20,7 +20,7 @@ PoissonFusion::~PoissonFusion()
 
 cv::Mat PoissonFusion::GetFusion()
 {
-	clock_t starttime = clock();
+	//clock_t starttime = clock();
 	cv::Mat result = target.clone();
 
 	/*cv::imshow("Ä¿±êÍ¼Ïñ", result);
@@ -40,7 +40,7 @@ cv::Mat PoissonFusion::GetFusion()
 	int inner_points_size = index_mapto_coor.size();
 
 	uchar colorv;
-	std::cout << "inner point number is: " << inner_points_size << std::endl;
+	//std::cout << "inner point number is: " << inner_points_size << std::endl;
 	for (int i = 0; i < inner_points_size; i++)
 	{
 		for (int chn = 0; chn < target.channels(); chn++)
@@ -54,8 +54,8 @@ cv::Mat PoissonFusion::GetFusion()
 			(*AddrMatAt(result, index_mapto_coor[i] + pos, chn)) = colorv;
 		}
 	}
-	clock_t endtime = clock();
-	std::cout << "Time consumed : " << (endtime - starttime) << "ms" << std::endl;
+	/*clock_t endtime = clock();
+	std::cout << "Time consumed : " << (endtime - starttime) << "ms" << std::endl;*/
 	return result;
 }
 
