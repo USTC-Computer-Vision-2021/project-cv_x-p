@@ -193,28 +193,46 @@ cv::Mat PoissonFusion::GetFusion()
 #### 测试样例1(罗马万神殿)
 
 - 新图片
+  
   ![img](./test/1/current.jpg)
+
 - 旧图片
+  
   ![img](./test/1/past.jpg)
+
 - 不融合直接拼接结果
-![img](./test/1/FusionResult_NONE.png)
+    
+    ![img](./test/1/FusionResult_NONE.png)
+
 - 泊松融合结果
-![img](./test/1/FusionResult_POISSON.png)
+    
+    ![img](./test/1/FusionResult_POISSON.png)
+
 - 前景和背景区分加权融合结果
-![img](./test/1/FusionResult_WEIGHT_AVG.png)
+    
+    ![img](./test/1/FusionResult_WEIGHT_AVG.png)
 
 #### 测试样例2(北京天安门)
 
 - 新图片
+  
   ![img](./test/2/current.jpg)
+
 - 旧图片
+  
   ![img](./test/2/past.jpg)
+
 - 不融合直接拼接结果
-![img](./test/2/FusionResult_NONE.png)
+
+    ![img](./test/2/FusionResult_NONE.png)
+
 - 泊松融合结果
-![img](./test/2/FusionResult_POISSON.png)
+    
+    ![img](./test/2/FusionResult_POISSON.png)
+
 - 前景和背景区分加权融合结果
-![img](./test/2/FusionResult_WEIGHT_AVG.png)
+    
+    ![img](./test/2/FusionResult_WEIGHT_AVG.png)
 
 #### 对运行结果的简单分析
 
@@ -263,13 +281,13 @@ cv::Mat PoissonFusion::GetFusion()
 #### 所使用的库版本:
 
 ```
-opencv(C++)==4.5.1
+opencv+contrib(C++)==4.5.1
 eigen(C++)==3.3.7
 ```
 
 #### 运行说明
 
-已经在$./out/build/Release$文件夹中给出了可执行文件与动态链接库，下载后直接在$cmd$中执行即可，其中$test\_ case$是测试样例的下标(可选择$1$或$2$)，$fusion\_ method$是融合方法，可选择为$NONE$、$POISSON$和$WEIGHT\_ AVG$:
+已经在$./out/build/Release$文件夹中给出了可执行文件与动态链接库，下载后直接在$cmd$中执行即可，其中$test\underline{\ \ }case$是测试样例的下标(可选择$1$或$2$)，$fusion\underline{\ \ } method$是融合方法，可选择为$NONE$、$POISSON$和$WEIGHT\underline{\ \ } AVG$:
 
 ```
 lookintopast.exe test_case fusion_method
